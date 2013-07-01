@@ -1,0 +1,240 @@
+/*
+ * Copyright (C) 2013 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+body {
+   background: #404040;
+   color: white;
+   font-size: 18px;
+   font-family: "Press Start 2P", monospace;
+}
+
+button {
+   background: #000;
+   color: #0f0;
+   border: 2px solid #0f0;
+   font-size: 18px;
+   font-family: "Press Start 2P", monospace;
+   padding: 10px;
+   cursor: pointer;
+}
+
+#play_button {
+   display: inline-block;
+   background: #0f0;
+   color: black;
+}
+
+
+#game_canvas {
+   width: 1000px;
+   height: 600px;
+   background: black;
+}
+
+
+.screen {
+   background: black;
+   width: 1000px;
+   height: 600px;
+   position: relative;
+   display: none;
+}
+
+#wait_div {
+   display: block;
+}
+
+#main_menu {
+   text-align: center;
+}
+
+#title {
+   padding-top: 50px;
+   padding-bottom: 50px;
+}
+
+#how_to {
+   display: inline-block;
+   padding-top: 50px;
+   text-align: left;
+   margin-left: 50px;
+   margin-bottom: 20px;
+   margin-right: 50px;
+   width: 500px;
+   line-height: 200%;
+   font-size: 12pt;
+}
+
+#podium {
+   display: inline-block;
+   vertical-align: top;
+   margin-top: 50px;
+   border: 1px solid green;
+   font-size: 6pt;
+   text-align: left;
+   padding: 10px;
+   background: #040;
+}
+
+#sign_in_bar {
+   padding: 20px;
+   text-align: left;
+   color: #888;
+   font-size: 15px;
+   display: none;
+}
+
+#sign_out_bar {
+   padding: 20px;
+   text-align: left;
+   color: #888;
+   font-size: 15px;
+   display: none;
+}
+
+#sign_in_button {
+   display: inline-block;
+   vertical-align: middle;
+}
+
+#your_score_title {
+   padding-top: 200px;
+   text-align: center;
+}
+
+#score {
+   padding-top: 50px;
+   text-align: center;
+   color: #0f0;
+}
+
+#result_ok_button {
+   display: block;
+   margin: 50px auto 0px auto;
+   width: 100px;
+}
+
+#wait_msg {
+   padding-top: 280px;
+   text-align: center;
+}
+
+.up_button {
+   position: absolute;
+   left: 10px;
+   top: 10px;
+}
+
+.highscores_box {
+   position: absolute;
+   top: 60px;
+   width: 450px;
+   text-align: left;
+   font-size: 12px;
+}
+
+#highscores_social_box {
+   left: 20px;
+}
+
+#highscores_public_box {
+   left: 500px;
+}
+
+#highscores_your_box {
+   position: absolute;
+   top: 10px;
+   left: 100px;
+   width: 800px;
+   text-align: center;
+}
+
+.highscores_content {
+   margin-top: 20px;
+   line-height: 150%;
+}
+
+#your_high_score {
+   color: #0f0;
+}
+
+#ach_title {
+   padding-top: 20px;
+   text-align: center;
+   padding-bottom: 20px;
+}
+
+#ach_list {
+   margin: 0px auto 0px auto;
+   width: 800px;
+   height: 500px;
+   overflow: auto;
+}
+
+.ach_name_unlocked { color: #0f0; }
+.ach_name_locked { color: #555; }
+.ach_list_item { }
+.ach_icon {
+   width: 32px;
+   height: 32px;
+}
+.ach_info {
+   display: inline-block;
+   margin-left: 20px;
+   width: 700px;
+   margin-top: 20px;
+   margin-bottom: 20px;
+}
+.ach_desc_locked {
+   font-size: 12pt;
+   color: #444;
+}
+.ach_desc_unlocked {
+   font-size: 12pt;
+   color: #080;
+}
+
+#ach_toast {
+   position: absolute;
+   top: 15px;
+   left: 0px;
+   width: 1000px;
+   height: 100px;
+   display: none;
+   text-align: center;
+   color: #ff0;
+   font-size: 12pt;
+}
+
+#sign_out_button {
+   background: #333;
+   color: #888;
+   border: 2px solid #888;
+}
+
+.credit_div {
+   width: 1000px;
+   font-family: Helvetica, Arial, sans-serif;
+   font-size: 10pt;
+   color: #888;
+   padding-top: 10px;
+}
+
+a {
+   color: #88a;
+}
+
+
