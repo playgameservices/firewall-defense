@@ -29,12 +29,15 @@ $(document).ready(function() {
 function onPlayClicked() {
   $('.screen').hide();
   $('#wait_div').show();
+  console.log("Loading sounds...");
   audio.prepareSounds(onReadyToPlay);
 }
 
 function onReadyToPlay() {
+  console.log("Ready to play.");
   $('.screen').hide();
   $('#game_div').show();
+  console.log("Starting game.");
   gamelogic.startGame(onGameEnded);
 }
 
@@ -57,7 +60,12 @@ function showMainScreen() {
 
 // Update podium on main screen
 function updatePodium() {
-  fillInHighscores("#podium", gameservices.highScores["public"], 3);
+  if (gameservices.signedIn) {
+    fillInHighscores("#podium", gameservices.highScores["public"], 3);
+    $('#podium').show();
+  } else {
+    $('#podium').hide();
+  }
 }
 
 // Called when user wants to go back to the menu.

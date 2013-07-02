@@ -17,12 +17,15 @@
 // namespace
 audio = {};
 
+// Correct sound extension (use ogg on Chrome, wav on others)
+audio.EXT = (/Chrome/.test(navigator.userAgent)) ? "ogg" : "wav";
+
 // Our sounds:
 audio.availableSounds = {
-  explosion: "sounds/explosion.ogg",
-  laser: "sounds/laser.ogg",
-  wallbreak: "sounds/wallbreak.ogg",
-  badhit: "sounds/badhit.ogg"
+  explosion: "sounds/explosion." + audio.EXT,
+  laser: "sounds/laser." + audio.EXT,
+  wallbreak: "sounds/wallbreak." + audio.EXT,
+  badhit: "sounds/badhit." + audio.EXT
 };
 
 // are sounds enabled?
@@ -40,15 +43,19 @@ audio.playSound = function(soundName) {
 
 // Wait for sounds to be loaded, then calls the given callback.
 audio.waitForSounds = function(callback) {
-  var allReady = true;
+  var numReady = 0, total = 0;
   for (var i in audio.sounds) {
-    if (audio.sounds[i].readyState != 4) allReady = false;
+    if (audio.sounds[i].readyState == 4) numReady++;
+    total++;
   }
-  if (allReady) {
+  if (numReady >= total) {
+    // all sounds ready
     audio.soundsEnabled = true;
     callback();
   }
-  else setTimeout(function() { audio.waitForSounds(callback); }, 1000);
+  else {
+    setTimeout(function() { audio.waitForSounds(callback); }, 1000);
+  }
 }
 
 // Load all sounds and calls the given callback when ready.
@@ -59,7 +66,9 @@ audio.prepareSounds = function(callback) {
   } else {
     // start loading sounds and wait until they are loaded
     for (i in audio.availableSounds) {
+      console.log("Loading audio: " + audio.availableSounds[i]);
       audio.sounds[i] = new Audio(audio.availableSounds[i]);
+      console.log("Audio is " + audio.sounds[i]);
     }
     audio.waitForSounds(callback);
   }

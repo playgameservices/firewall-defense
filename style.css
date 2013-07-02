@@ -16,7 +16,8 @@
 
 body {
    background: #404040;
-   color: white;
+   color: #00ff00;
+   text-shadow: 0 0 10px #0f0;
    font-size: 18px;
    font-family: "Press Start 2P", monospace;
 }
@@ -24,6 +25,7 @@ body {
 button {
    background: #000;
    color: #0f0;
+   text-shadow: 0 0 10px #0f0;
    border: 2px solid #0f0;
    font-size: 18px;
    font-family: "Press Start 2P", monospace;
@@ -35,6 +37,7 @@ button {
    display: inline-block;
    background: #0f0;
    color: black;
+   text-shadow: 0 0 10px #080;
 }
 
 
@@ -93,6 +96,7 @@ button {
    padding: 20px;
    text-align: left;
    color: #888;
+   text-shadow: 0 0 5px #040;
    font-size: 15px;
    display: none;
 }
@@ -101,6 +105,7 @@ button {
    padding: 20px;
    text-align: left;
    color: #888;
+   text-shadow: 0 0 5px #040;
    font-size: 15px;
    display: none;
 }
@@ -119,6 +124,7 @@ button {
    padding-top: 50px;
    text-align: center;
    color: #0f0;
+   text-shadow: 0 0 10px #0f0;
 }
 
 #result_ok_button {
@@ -184,8 +190,14 @@ button {
    overflow: auto;
 }
 
-.ach_name_unlocked { color: #0f0; }
-.ach_name_locked { color: #555; }
+.ach_name_unlocked {
+   color: #0f0;
+   text-shadow: 0 0 5px #0f0;
+}
+.ach_name_locked { 
+   color: #555;
+   text-shadow: 0 0 5px #555;
+}
 .ach_list_item { }
 .ach_icon {
    width: 32px;
@@ -201,10 +213,12 @@ button {
 .ach_desc_locked {
    font-size: 12pt;
    color: #444;
+   text-shadow: 0 0 5px #222;
 }
 .ach_desc_unlocked {
    font-size: 12pt;
    color: #080;
+   text-shadow: 0 0 5px #040;
 }
 
 #ach_toast {
@@ -216,11 +230,13 @@ button {
    display: none;
    text-align: center;
    color: #ff0;
+   text-shadow: 0 0 10px #ff0;
    font-size: 12pt;
 }
 
 #sign_out_button {
    background: #333;
+   text-shadow: none;
    color: #888;
    border: 2px solid #888;
 }
@@ -228,6 +244,7 @@ button {
 .credit_div {
    width: 1000px;
    font-family: Helvetica, Arial, sans-serif;
+   text-shadow: none;
    font-size: 10pt;
    color: #888;
    padding-top: 10px;

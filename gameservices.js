@@ -104,8 +104,7 @@ gameservices.onSignInResult = function(authResult) {
     gameservices.signedIn = false;
     $('#sign_in_bar').show();
     $('#sign_out_bar').hide();
-    $('#wait_div').hide();
-    $('#main_menu').show();
+    showMainScreen();
   }
 }
 
@@ -253,10 +252,16 @@ gameservices.loadHighScores = function() {
 }
 
 gameservices.refreshHighScores = function(callback, force) {
+  // if not logged in, no refreshing...
+  if (!gameservices.signedIn) {
+    callback();
+    return;
+  }
   // too soon?
   if (!force && Date.now() < gameservices.lastHighScoreRefresh + 
       (1000 * MIN_HIGHSCORE_REFRESH_INTERVAL)) {
     callback();
+    return;
   }
 
   gameservices.asyncLoads.publicHighScores = false;
