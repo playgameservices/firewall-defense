@@ -25,7 +25,9 @@ audio.availableSounds = {
   explosion: "sounds/explosion." + audio.EXT,
   laser: "sounds/laser." + audio.EXT,
   wallbreak: "sounds/wallbreak." + audio.EXT,
-  badhit: "sounds/badhit." + audio.EXT
+  badhit: "sounds/badhit." + audio.EXT,
+  blast: "sounds/blast." + audio.EXT,
+  powerup: "sounds/powerup." + audio.EXT
 };
 
 // are sounds enabled?

@@ -49,7 +49,8 @@ gameservices.ACHIEVEMENTS = {
     { kills: 500, id: "CgkIhZGW-vgbEAIQFA" },
   ],
   FREQUENT: "CgkIhZGW-vgbEAIQFQ",
-  SERIOUS: { minScore: 2000, id: "CgkIhZGW-vgbEAIQFg" }
+  SERIOUS: { minScore: 2000, id: "CgkIhZGW-vgbEAIQFg" },
+  OVUM: "CgkIhZGW-vgbEAIQFw"
 };
 
 // are we signed in?

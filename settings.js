@@ -22,9 +22,6 @@ var DELTA_MAX = 0.05;
 // Width and height of the gameplay screen, in pixels.
 var SCREEN_W = 1000, SCREEN_H = 600;
 
-// What fill style we use to draw the player
-var PLAYER_FILL = "#fff/#888/#444";
-
 // Player's size, in pixels
 var PLAYER_SIZE = 30;
 
@@ -40,12 +37,10 @@ var SCOPE_HEIGHT = 8;
 var INIT_WALL_THICKNESS = 100; // initial thickness
 var WALL_DAMAGE_UNIT = 20; // how much of the wall is lost when it gets hit
 var WALL_H = 530;
-var WALL_FILL = "#0ff/#088/#044";
 
 // enemy settings:
 var ENEMY_W = 50;
 var ENEMY_H = 30;
-var ENEMY_FILL = "#0f0/#080/#040";
 var EYE_FILL = "#000";
 var ENEMY_SPEED_MIN = 100;
 var ENEMY_SPEED_MAX = 150;
@@ -53,6 +48,7 @@ var ENEMY_HEAD_PROP = 0.7; // proportion of the head (for drawing)
 var ENEMY_TENTACLE_PROP = 0.7; // proportion of the tentacles (for drawing)
 var ENEMY_VALUE_MIN = 20; // minimum points awarded for killing enemy
 var ENEMY_VALUE_MAX = 200; // maximum points awarded for killing enemy
+var COMBO_BONUS = 10; // bonus for combo
 
 // new enemies get this additional speed every time an enemy is killed:
 var ENEMY_SPEEDUP_UNIT = 3;
@@ -61,12 +57,9 @@ var ENEMY_SPEEDUP_UNIT = 3;
 var BULLET_W = 4;
 var BULLET_H = 20;
 var BULLET_SPEED = 500;
-var BULLET_FILL = PLAYER_FILL;
 
 // allies ("data packets"): the things the player should NOT shoot.
 var ALLY_W = 30, ALLY_H = 30;
-var ALLY_FILL = "#08f/#048/#024";
-var ALLY_ANGRY_FILL = "#a00/#800/#400";
 var ALLY_SPEED_MIN = 30;
 var ALLY_SPEED_MAX = 50;
 var ALLY_SPEED_ANGRY = 300; // speed when ally has been hit and turns angry
@@ -110,7 +103,54 @@ var SCORE_FONT = "20px 'Press Start 2P'";
 var SCORE_FILL = "#0f0";
 var SCORE_X = 880, SCORE_Y = 50;
 
+// combo display settings
+var COMBO_FONT = "10px 'Press Start 2P'";
+var COMBO_FILL = "#ff0";
+var COMBO_X = 820, COMBO_Y = 20;
+var COMBO_BAR_W = 100, COMBO_BAR_H = 10;
+var COMBO_BAR_X = 880, COMBO_BAR_Y = 10;
+var COMBO_BAR_DARK_FILL = "#440/#220/#110";
+var COMBO_BAR_LIGHT_FILL = "#ff0/#880/#440";
+
+// displacement of the "score extra" string (usually to display combos, etc)
+// relative to the score popup
+var SCORE_POPUP_EXTRA_DX = -30;
+var SCORE_POPUP_EXTRA_DY = -20;
+var SCORE_POPUP_EXTRA_FONT = "10px 'Press Start 2P'";
+var SCORE_POPUP_EXTRA_FILL = "#ff0";
+
 // high score time span
 var HIGHSCORE_TIME_SPAN = "ALL_TIME";
 var MIN_HIGHSCORE_REFRESH_INTERVAL = 30.0;  // in seconds
+
+// how many combo gives you the "super bonus"
+var COMBO_MAX = 12;
+
+// palettes (we start with the first one and rotate as combo level rises)
+var PALETTES = [
+  { background: "#000", player: "#fff/#888/#fff", wall: "#0ff/#088/#044", 
+    enemy: "#0F0/#080/#040", ally: "#08F/#048/#024", 
+    ally_angry: "#A00/#800/#400" },
+
+  { background: "#220", player: "#fff/#888/#fff", wall: "#0ff/#088/#044", 
+    enemy: "#ff0/#880/#440", ally: "#08F/#048/#024", 
+    ally_angry: "#A00/#800/#400" },
+
+  { background: "#420", player: "#fff/#888/#fff", wall: "#0ff/#088/#044", 
+    enemy: "#fa0/#840/#420", ally: "#08F/#048/#024", 
+    ally_angry: "#A00/#800/#400" },
+
+  { background: "#400", player: "#fff/#888/#fff", wall: "#0ff/#088/#044", 
+    enemy: "#f00/#800/#400", ally: "#08F/#048/#024", 
+    ally_angry: "#A00/#800/#400" }
+];
+
+// which palette to use for each combo level
+var PALETTE_FOR_COMBO = [ 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3 ];
+
+// time slowdown effect for each combo level
+var TIME_FACTOR_FOR_COMBO = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5 ];
+
+// at which combo level we should play the "powerup" sound effect
+var COMBO_SFX_LEVEL = 9;
 

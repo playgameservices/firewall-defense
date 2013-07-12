@@ -36,6 +36,8 @@ gamelogic.startGame = function(endGameCallback) {
     particles: [],
     kills: 0, // # enemies killed in this game
     killsInARow: 0, // kills in a row (without missing)
+    combo: 0, // combo (kills in a row) -- except that combo gets reset after
+        // the combo maxes out; killsInARow does not.
     wallLeft: INIT_WALL_THICKNESS, // how much of the wall is left
     intactWallTime: 0,  // how long the wall has been intact for
     expiry: undefined, // if defined, this is the time when the game will end
@@ -44,7 +46,7 @@ gamelogic.startGame = function(endGameCallback) {
 
     // for the purposes of incremental achievements:
     lastIncCall: Date.now(), // last time we submitted incremental ach's
-    killsToSend: 0 // how many enemy kills we need to send as incremental ach
+    killsToSend: 0, // how many enemy kills we need to send as incremental ach
   }
   gamelogic.doFrame();
 }
@@ -65,6 +67,12 @@ gamelogic.doFrame = function() {
 
   // get canvas context
   var ctx = gamelogic.game.canvas.getContext("2d");
+  
+  // update game palette based on combo level
+  var combo = gamelogic.game.combo;
+  var palNo = (combo >= PALETTE_FOR_COMBO.length) ? 0 : 
+      PALETTE_FOR_COMBO[combo];
+  graphics.setPalette(PALETTES[palNo]);
 
   // draw background
   graphics.drawBackground(ctx);
@@ -100,10 +108,14 @@ gamelogic.doFrame = function() {
   // draw score
   graphics.drawScore(ctx, gamelogic.game.score);
 
+  // draw combo meter
+  graphics.drawCombo(ctx, gamelogic.game.combo);
+
   // draw score popup, if any
   if (gamelogic.game.scorePopup) {
     graphics.drawScorePopup(ctx, gamelogic.game.scorePopup.value,
-        gamelogic.game.scorePopup.x, gamelogic.game.scorePopup.y);
+        gamelogic.game.scorePopup.x, gamelogic.game.scorePopup.y,
+        gamelogic.game.scorePopup.extra);
   }
 
   // schedule next frame
@@ -148,6 +160,10 @@ gamelogic.spawnEnemy = function() {
 // Updates game entities (this function runs once per frame). Returns true
 // to mean the game should continue; false to mean the game should end.
 gamelogic.update = function(delta) {
+  if (gamelogic.game.combo < TIME_FACTOR_FOR_COMBO.length) {
+    delta *= TIME_FACTOR_FOR_COMBO[gamelogic.game.combo];
+  }
+
   // update each enemy's and ally's position, based on speed.
   for (var c = 0; c <= 1; c++) {
     coll = c ? gamelogic.game.enemies : gamelogic.game.allies;
@@ -184,6 +200,7 @@ gamelogic.update = function(delta) {
     if (gamelogic.game.bullet.y < -BULLET_H) {
       gamelogic.game.bullet = undefined;
       gamelogic.game.killsInARow = 0; // missed!
+      gamelogic.game.combo = 0; // missed!
     }
     else gamelogic.checkBulletHit(); // check if bullet hit something
   } else if (bulletRequested) {
@@ -210,6 +227,12 @@ gamelogic.update = function(delta) {
     if (Date.now() > gamelogic.game.scorePopup.expiry) {
       gamelogic.game.scorePopup = undefined;
     }
+  }
+
+  // combo maxed out?
+  if (gamelogic.game.combo >= COMBO_MAX) {
+    gamelogic.blastAll();
+    gamelogic.game.combo = 0;
   }
 
   // end of game?
@@ -272,8 +295,39 @@ gamelogic.fireBullet = function() {
 
 // Handles a key up/down event.
 gamelogic.handleKey = function(code, down) {
-  if (gamelogic.game) gamelogic.game.keyDown[code] = down;
+  if (gamelogic.game) {
+    gamelogic.game.keyDown[code] = down;
+    if (!down) gamelogic.ovumProc(code);
+  }
 }
+
+// for the e-a-s-t-e-r e-g-g
+// intentionally obfuscated :-)
+gamelogic.ovumProc = function(code) {
+  if (code < 0) return;
+  if (!gamelogic.ovum || gamelogic.ovum.t + 2000 < Date.now()) {
+    gamelogic.ovum = { p:0, q:0, r:0, s:0, t:Date.now() };
+  }
+  var o = gamelogic.ovum;
+  o.p = ((o.p << 2) | (code & 3)) & 1048575;
+  o.q = ((o.q << 2) | ((code >> 2) & 3)) & 1048575;
+  o.r = ((o.r << 2) | ((code >> 4) & 3)) & 1048575;
+  o.s = ((o.s << 2) | ((code >> 6) & 3)) & 1048575;
+  o.t = Date.now();
+  if (o.p == 657273 && o.q == 370000 && o.r == 699040 && o.s == 5) {
+    graphics.ovum = !graphics.ovum;
+    gameservices.unlockAchievement(gameservices.ACHIEVEMENTS.OVUM);
+    if (gamelogic.game.score % 10 != 1) gamelogic.game.score += 1;
+  }
+}
+
+// Makes a disintegration effect of the given entity (ally or enemy).
+// This does the visual effect only; it does NOT remove it from the array.
+gamelogic.disintegrate = function(e, isEnemy, impactX, impactY) {
+  gamelogic.makeDisintegrationEffect(e.x, e.y, e.w, e.h, impactX, impactY,
+    (isEnemy ? graphics.palette.enemy : graphics.palette.ally_angry));
+}
+
 
 // Checks if the bullet hit something (enemy or ally).
 gamelogic.checkBulletHit = function() {
@@ -291,9 +345,7 @@ gamelogic.checkBulletHit = function() {
       // Hit! Remove item and bullet, play animations.
       if (collection == gamelogic.game.enemies || e.angry) {
         // enemy (or angry ally) killed
-        gamelogic.makeDisintegrationEffect(e.x, e.y, e.w, e.h, b.x, b.y,
-            collection == gamelogic.game.allies ? ALLY_ANGRY_FILL :
-            ENEMY_FILL);
+        gamelogic.disintegrate(e, collection==gamelogic.game.enemies, b.x, b.y);
         util.removeAt(collection, i);
       } else {
         // ally made angry
@@ -307,11 +359,18 @@ gamelogic.checkBulletHit = function() {
         // player hit an ally. No points awareded.
         value = 0;
         gamelogic.game.killsInARow = 0;
+        gamelogic.game.combo = 0;
       } else {
         // player hit an enemy.
         gamelogic.game.kills++;
         gamelogic.game.killsToSend++;
         gamelogic.game.killsInARow++;
+        gamelogic.game.combo++;
+
+        // play "powerup" audio, if this is the right time
+        if (gamelogic.game.combo == COMBO_SFX_LEVEL) {
+          audio.playSound("powerup");
+        }
 
         // compute the value of the kill
         value = util.interpolate(0, ENEMY_VALUE_MAX, SCREEN_H,
@@ -328,6 +387,12 @@ gamelogic.checkBulletHit = function() {
 
         audio.playSound("explosion");
       }
+
+      // compute combo bonus
+      var comboBonus = gamelogic.game.combo * COMBO_BONUS; 
+      value += comboBonus;
+
+      // add to score
       gamelogic.game.score += value;
       if (gamelogic.game.score < 0) gamelogic.game.score = 0;
       if (value > 0) {
@@ -336,6 +401,11 @@ gamelogic.checkBulletHit = function() {
           x: e.x + SCORE_POPUP_XLATE_X, y: e.y + SCORE_POPUP_XLATE_Y,
           value: value, expiry: Date.now() + 1000 * SCORE_POPUP_DURATION
         };
+        var combo = gamelogic.game.combo; // shorthand
+        if (combo > 1) {
+          var comboName = combo + "-COMBO";
+          gamelogic.game.scorePopup.extra = comboName + " +" + comboBonus;
+        }
       }
       gamelogic.game.bullet = undefined;
       gamelogic.checkRankAchievements();
@@ -375,10 +445,10 @@ gamelogic.checkWallHitWith = function(e) {
 
   // do particle effects
   gamelogic.makeDisintegrationEffect(e.x, e.y, e.w, e.h, e.x, e.y,
-      e.angry ? ALLY_ANGRY_FILL : ENEMY_FILL);
+      e.angry ? graphics.palette.ally_angry : graphics.palette.enemy);
   gamelogic.makeDisintegrationEffect(gamelogic.game.wallLeft, 0,
       WALL_DAMAGE_UNIT, WALL_H, gamelogic.game.wallLeft, WALL_H/2,
-      WALL_FILL);
+      graphics.palette.wall);
 
   audio.playSound("wallbreak");
 
@@ -388,7 +458,8 @@ gamelogic.checkWallHitWith = function(e) {
     // show player getting disintegrated
     gamelogic.makeDisintegrationEffect(gamelogic.game.playerX,
         SCREEN_H - PLAYER_SIZE, PLAYER_SIZE, PLAYER_SIZE,
-        gamelogic.game.playerX + PLAYER_SIZE/2, SCREEN_H, PLAYER_FILL);
+        gamelogic.game.playerX + PLAYER_SIZE/2, SCREEN_H, 
+        graphics.palette.player);
 
     // game will end in DEATH_ANIM_DURATION seconds.
     gamelogic.game.expiry = Date.now() + 1000 * DEATH_ANIM_DURATION;
@@ -457,4 +528,20 @@ gamelogic.checkIncrementalAchievements = function(endOfGame) {
     }
   }
 }
+
+// Clears the board
+gamelogic.blastAll = function() {
+  for (var i = 0; i < gamelogic.game.enemies.length; i++) {
+    var e = gamelogic.game.enemies[i];
+    gamelogic.disintegrate(e, true, e.x, e.y);
+  }
+  for (var i = 0; i < gamelogic.game.allies.length; i++) {
+    var a = gamelogic.game.allies[i];
+    gamelogic.disintegrate(a, false, a.x, a.y);
+  }
+  gamelogic.game.enemies = [];
+  gamelogic.game.allies = [];
+  audio.playSound("blast");
+}
+
 

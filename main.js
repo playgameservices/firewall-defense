@@ -142,6 +142,7 @@ function onAchClicked() {
 
   // fill in achievements screen
   var htmlv = [];
+  htmlv.push(_makeAchBox(gameservices.ACHIEVEMENTS.OVUM));
   htmlv.push(_makeAchBox(gameservices.ACHIEVEMENTS.KILL_ENEMY));
   htmlv.push(_makeAchBoxV(gameservices.ACHIEVEMENTS.PRECISION));
   htmlv.push(_makeAchBoxV(gameservices.ACHIEVEMENTS.INTEGRITY));
