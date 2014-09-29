@@ -47,6 +47,10 @@ gamelogic.startGame = function(endGameCallback) {
     // for the purposes of incremental achievements:
     lastIncCall: Date.now(), // last time we submitted incremental ach's
     killsToSend: 0, // how many enemy kills we need to send as incremental ach
+
+    // for the purposes of events and quests
+    startTime: Date.now(),
+    maxCombos: 0
   }
   gamelogic.doFrame();
 }
@@ -67,10 +71,10 @@ gamelogic.doFrame = function() {
 
   // get canvas context
   var ctx = gamelogic.game.canvas.getContext("2d");
-  
+
   // update game palette based on combo level
   var combo = gamelogic.game.combo;
-  var palNo = (combo >= PALETTE_FOR_COMBO.length) ? 0 : 
+  var palNo = (combo >= PALETTE_FOR_COMBO.length) ? 0 :
       PALETTE_FOR_COMBO[combo];
   graphics.setPalette(PALETTES[palNo]);
 
@@ -233,11 +237,13 @@ gamelogic.update = function(delta) {
   if (gamelogic.game.combo >= COMBO_MAX) {
     gamelogic.blastAll();
     gamelogic.game.combo = 0;
+    gamelogic.game.maxCombos++;
   }
 
   // end of game?
   if (gamelogic.game.expiry && Date.now() > gamelogic.game.expiry) {
     gamelogic.checkIncrementalAchievements(true);
+    gamelogic.checkEvents(true);
     var cb = gamelogic.game.endGameCallback;
     gamelogic.game.endGameCallback = undefined;
     if (cb) cb(gamelogic.game.score);
@@ -389,7 +395,7 @@ gamelogic.checkBulletHit = function() {
       }
 
       // compute combo bonus
-      var comboBonus = gamelogic.game.combo * COMBO_BONUS; 
+      var comboBonus = gamelogic.game.combo * COMBO_BONUS;
       value += comboBonus;
 
       // add to score
@@ -458,7 +464,7 @@ gamelogic.checkWallHitWith = function(e) {
     // show player getting disintegrated
     gamelogic.makeDisintegrationEffect(gamelogic.game.playerX,
         SCREEN_H - PLAYER_SIZE, PLAYER_SIZE, PLAYER_SIZE,
-        gamelogic.game.playerX + PLAYER_SIZE/2, SCREEN_H, 
+        gamelogic.game.playerX + PLAYER_SIZE/2, SCREEN_H,
         graphics.palette.player);
 
     // game will end in DEATH_ANIM_DURATION seconds.
@@ -526,6 +532,28 @@ gamelogic.checkIncrementalAchievements = function(endOfGame) {
       gameservices.incrementAchievement(
         gameservices.ACHIEVEMENTS.SERIOUS.id, 1);
     }
+  }
+}
+
+// Check to see which events we should submit.
+gamelogic.checkEvents = function(endOfGame) {
+  // Submit kills
+  if (gamelogic.game.kills > 0) {
+    gameservices.recordEvent(gameservices.EVENTS.ENEMIES_KILLED,
+      gamelogic.game.kills, gamelogic.game.startTime);
+  }
+
+  // Submit 12 combos
+  if (gamelogic.game.maxCombos > 0) {
+    gameservices.recordEvent(gameservices.EVENTS.COMBOS_ACHIEVED,
+      gamelogic.game.maxCombos, gamelogic.game.startTime);
+  }
+
+
+  if (endOfGame) {
+    // Submit game played
+    gameservices.recordEvent(gameservices.EVENTS.GAMES_PLAYED, 1,
+      gamelogic.game.startTime);
   }
 }
 

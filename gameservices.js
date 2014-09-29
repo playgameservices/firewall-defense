@@ -52,6 +52,11 @@ gameservices.ACHIEVEMENTS = {
   SERIOUS: { minScore: 2000, id: "CgkI7Zzqy8sIEAIQFg" },
   OVUM: "CgkI7Zzqy8sIEAIQFw"
 };
+gameservices.EVENTS = {
+  ENEMIES_KILLED: "CgkI7Zzqy8sIEAIQGA",
+  GAMES_PLAYED: "CgkI7Zzqy8sIEAIQGQ" ,
+  COMBOS_ACHIEVED: "CgkI7Zzqy8sIEAIQGg"
+};
 
 // are we signed in?
 gameservices.signedIn = false;
@@ -62,10 +67,14 @@ gameservices.highestScorePosted = 0;
 // achievement data
 gameservices.achievements = {};
 
+// event data
+gameservices.events = {};
+
 // this keeps track of async stuff we are loading. When everything is done
 // loading, we call gameservices.loadFinishedCallback.
 gameservices.asyncLoads = {
   achievements: false,
+  events: false,
   definitions: false,
   publicHighScores: false,
   socialHighScores: false
@@ -125,6 +134,14 @@ gameservices.onApiLoaded = function() {
   // load player's achievements
   req = gapi.client.games.achievements.list({ playerId: "me" });
   req.execute(gameservices.onAchievementsLoaded);
+
+  // load event definitions
+  req = gapi.client.games.events.listDefinitions();
+  req.execute(gameservices.onEventDefinitionsLoaded);
+
+  // load player's events
+  req = gapi.client.games.events.listByPlayer();
+  req.execute(gameservices.onEventsLoaded);
 
   // load high scores
   gameservices.loadHighScores();
@@ -222,6 +239,67 @@ gameservices.onAchievementDefinitionsLoaded = function(result) {
 
   gameservices.asyncLoads.definitions = true;
   gameservices.checkAsyncLoadsFinished();
+}
+
+// Called when the event definitions have been loaded
+gameservices.onEventDefinitionsLoaded = function(result) {
+  if (!result) {
+    alert('Failed to sign in (failed to load event definitions).');
+    gameservices.onSignInResult(false);
+    return;
+  }
+
+  if (result.items) {
+    for (var i = 0; i < result.items.length; ++i) {
+      var d = result.items[i];
+      if (!gameservices.events[d.id]) {
+        gameservices.events[d.id] = {};
+      }
+      gameservices.events[d.id].def = d;
+    }
+  }
+
+  if (result.nextPageToken) {
+    // there's more to load
+    var req = gapi.client.events.listDefinitions({
+      pageToken: result.nextPageToken
+    });
+    req.execute(gameservices.onEventDefinitionsLoaded);
+    return;
+  }
+}
+
+// Called when the player's events have been loaded
+gameservices.onEventsLoaded = function(result) {
+  if (!result) {
+    alert("Failed to sign in (failed to load events).");
+    gameservices.onSignInResult(false);
+    return;
+  }
+
+  if (result.items) {
+    for (var i = 0; i < result.items.length; i++) {
+      var e = result.items[i];
+
+      if (!gameservices.events[e.definitionId]) {
+        gameservices.events[e.definitionId] = {};
+      }
+
+      gameservices.events[e.definitionId].numEvents = e.numEvents;
+    }
+  }
+
+  if (result.nextPageToken) {
+    // there's more to load
+    var req = gapi.client.games.events.listByPlayer({
+      pageToken: result.nextPageToken
+    });
+    req.execute(gameservices.onEventsLoaded);
+  } else {
+    // done loading
+    gameservices.asyncLoads.events = true;
+    gameservices.checkAsyncLoadsFinished();
+  }
 }
 
 gameservices.loadHighScores = function() {
@@ -371,6 +449,33 @@ gameservices.incrementAchievement = function(achId, steps) {
         gameservices.showAchToast(achId);
       }
     }
+  });
+}
+
+gameservices.recordEvent = function(evtId, steps, startTime) {
+  if (!gameservices.signedIn) return;
+  var nowMillis = Date.now();
+  console.log('timePeriod:'  + (nowMillis - startTime));
+  var req = gapi.client.games.events.record({
+    requestId: nowMillis,
+    currentTimeMillis: nowMillis,
+    timePeriods: [
+      {
+        timePeriod: {
+          periodStartMillis: startTime - 100000,
+          periodEndMillis: (nowMillis - 100)
+        },
+        updates: [
+          {
+            definitionId: evtId,
+            updateCount: steps
+          }
+        ]
+      }
+    ]
+  });
+  req.execute(function(resp) {
+    console.log(resp);
   });
 }
 

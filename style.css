@@ -177,13 +177,13 @@ button {
    color: #0f0;
 }
 
-#ach_title {
+#ach_title, #evt_title {
    padding-top: 20px;
    text-align: center;
    padding-bottom: 20px;
 }
 
-#ach_list {
+#ach_list, #evt_list {
    margin: 0px auto 0px auto;
    width: 800px;
    height: 500px;
@@ -194,7 +194,7 @@ button {
    color: #0f0;
    text-shadow: 0 0 5px #0f0;
 }
-.ach_name_locked { 
+.ach_name_locked {
    color: #555;
    text-shadow: 0 0 5px #555;
 }

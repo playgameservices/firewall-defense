@@ -19,6 +19,7 @@ $(document).ready(function() {
   $('#play_button').click(onPlayClicked);
   $('#lb_button').click(onLbClicked);
   $('#ach_button').click(onAchClicked);
+  $('#stats_button').click(onStatsClicked);
   $('.back_to_menu_button').click(onBackToMenuClicked);
   $('#sign_out_button').click(onSignOutClicked);
   $(document).keydown(function(evt) { gamelogic.handleKey(evt.which, true); });
@@ -189,6 +190,39 @@ function _makeAchBox(id) {
     ach.def.name + "</span><br/><span class='ach_desc_" +
     (ach.unlocked ? "unlocked" : "locked") + "'>" +
     ach.def.description + inc + "</span></div></div>";
+}
+
+function onStatsClicked() {
+  if (!gameservices.signedIn) {
+    alert("Please sign in with Google to see stats.");
+    return;
+  }
+
+  // fill in achievements screen
+  var htmlv = [];
+  htmlv.push(_makeEvtBox(gameservices.EVENTS.ENEMIES_KILLED));
+  htmlv.push(_makeEvtBox(gameservices.EVENTS.GAMES_PLAYED));
+  htmlv.push(_makeEvtBox(gameservices.EVENTS.COMBOS_ACHIEVED));
+  $('#evt_list').html(htmlv.join(''));
+
+  // show achievements screen
+  $('.screen').hide();
+  $('#evt_div').show();
+}
+
+function _makeEvtBox(id) {
+  var evt = gameservices.events[id];
+  if (!evt) {
+    console.log("BUG: event ID not found: " + id);
+    return "?";
+  }
+
+  return "<div class='ach_list_item'><img src='" +
+    (evt.def.imageUrl) +
+    "?size=32' class='ach_icon'><div class='ach_info'>" +
+    "<span class='ach_name_unlocked'>"+
+    evt.def.displayName + "</span><br/><span class='ach_desc_unlocked'>" +
+    evt.numEvents + "</span></div></div>";
 }
 
 // Called when user clicked on the "Sign Out" button.
