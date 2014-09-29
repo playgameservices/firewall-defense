@@ -18,39 +18,39 @@
 var gameservices = {};
 
 // IDs (obtained from the Google Play developer console)
-gameservices.CLIENT_ID = "960181405829.apps.googleusercontent.com";
-gameservices.LEADERBOARD_ID = "CgkIhZGW-vgbEAIQAQ";
+gameservices.CLIENT_ID = "295169592941-lde7pd84p5p2ftca065jqgmbk1jv5bf5.apps.googleusercontent.com";
+gameservices.LEADERBOARD_ID = "CgkI7Zzqy8sIEAIQCg";
 gameservices.ACHIEVEMENTS = {
-  KILL_ENEMY: "CgkIhZGW-vgbEAIQAg",
+  KILL_ENEMY: "CgkI7Zzqy8sIEAIQAQ",
   PRECISION: [
-    { kills:  5, id: "CgkIhZGW-vgbEAIQAw" },
-    { kills: 10, id: "CgkIhZGW-vgbEAIQBA" },
-    { kills: 25, id: "CgkIhZGW-vgbEAIQBQ" },
-    { kills: 50, id: "CgkIhZGW-vgbEAIQBg" }
+    { kills:  5, id: "CgkI7Zzqy8sIEAIQAg" },
+    { kills: 10, id: "CgkI7Zzqy8sIEAIQAw" },
+    { kills: 25, id: "CgkI7Zzqy8sIEAIQBA" },
+    { kills: 50, id: "CgkI7Zzqy8sIEAIQBQ" }
   ],
   INTEGRITY: [
-    { time:  30, id: "CgkIhZGW-vgbEAIQBw" },
-    { time:  60, id: "CgkIhZGW-vgbEAIQCA" },
-    { time: 120, id: "CgkIhZGW-vgbEAIQCQ" },
-    { time: 300, id: "CgkIhZGW-vgbEAIQCg" }
+    { time:  30, id: "CgkI7Zzqy8sIEAIQBg" },
+    { time:  60, id: "CgkI7Zzqy8sIEAIQBw" },
+    { time: 120, id: "CgkI7Zzqy8sIEAIQCA" },
+    { time: 300, id: "CgkI7Zzqy8sIEAIQCQ" }
   ],
   RANK: [
-    { score:  1000, id: "CgkIhZGW-vgbEAIQCw" },
-    { score:  2000, id: "CgkIhZGW-vgbEAIQDA" },
-    { score:  3000, id: "CgkIhZGW-vgbEAIQDQ" },
-    { score:  5000, id: "CgkIhZGW-vgbEAIQDg" },
-    { score:  8000, id: "CgkIhZGW-vgbEAIQDw" },
-    { score: 15000, id: "CgkIhZGW-vgbEAIQEA" }
+    { score:  1000, id: "CgkI7Zzqy8sIEAIQCw" },
+    { score:  2000, id: "CgkI7Zzqy8sIEAIQDA" },
+    { score:  3000, id: "CgkI7Zzqy8sIEAIQDQ" },
+    { score:  5000, id: "CgkI7Zzqy8sIEAIQDg" },
+    { score:  8000, id: "CgkI7Zzqy8sIEAIQDw" },
+    { score: 15000, id: "CgkI7Zzqy8sIEAIQEA" }
   ],
   EXPERIENCE: [
-    { kills:  50, id: "CgkIhZGW-vgbEAIQEQ" },
-    { kills: 100, id: "CgkIhZGW-vgbEAIQEg" },
-    { kills: 200, id: "CgkIhZGW-vgbEAIQEw" },
-    { kills: 500, id: "CgkIhZGW-vgbEAIQFA" },
+    { kills:  50, id: "CgkI7Zzqy8sIEAIQEq" },
+    { kills: 100, id: "CgkI7Zzqy8sIEAIQEg" },
+    { kills: 200, id: "CgkI7Zzqy8sIEAIQEw" },
+    { kills: 500, id: "CgkI7Zzqy8sIEAIQFA" },
   ],
-  FREQUENT: "CgkIhZGW-vgbEAIQFQ",
-  SERIOUS: { minScore: 2000, id: "CgkIhZGW-vgbEAIQFg" },
-  OVUM: "CgkIhZGW-vgbEAIQFw"
+  FREQUENT: "CgkI7Zzqy8sIEAIQFQ",
+  SERIOUS: { minScore: 2000, id: "CgkI7Zzqy8sIEAIQFg" },
+  OVUM: "CgkI7Zzqy8sIEAIQFw"
 };
 
 // are we signed in?
@@ -240,7 +240,7 @@ gameservices.loadHighScores = function() {
   req.execute(function(data) {
     gameservices.onHighScoresLoaded("social", data);
   });
-  
+
   // request public scores:
   var req = gapi.client.games.scores.list({
     collection: "PUBLIC",
@@ -259,7 +259,7 @@ gameservices.refreshHighScores = function(callback, force) {
     return;
   }
   // too soon?
-  if (!force && Date.now() < gameservices.lastHighScoreRefresh + 
+  if (!force && Date.now() < gameservices.lastHighScoreRefresh +
       (1000 * MIN_HIGHSCORE_REFRESH_INTERVAL)) {
     callback();
     return;
@@ -296,7 +296,7 @@ gameservices.onHighScoresLoaded = function(collection, data) {
   }
 
   // if we don't have enough data yet, get next page
-  if (gameservices.highScores[collection].length < MIN_HIGH_SCORES && 
+  if (gameservices.highScores[collection].length < MIN_HIGH_SCORES &&
         data.nextPageToken) {
     var req = gapi.client.games.scores.list({
       collection: collection.toUpperCase(),

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!--
    Copyright (C) 2013 Google Inc.
-  
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-  
+
         http://www.apache.org/licenses/LICENSE-2.0
-  
+
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,12 +58,12 @@
    </div>
    <div id="sign_in_bar">
       <div id="sign_in_button">
-         <span class="g-signin"
-               data-callback="onSignInResult"
-               data-clientid="960181405829.apps.googleusercontent.com"
-               data-cookiepolicy="single_host_origin"
-            data-requestvisibleactions="http://schemas.google.com/AddActivity"
-               data-scope="https://www.googleapis.com/auth/games">
+        <!-- TODO(samstern): requestvisible actions causes inability to load signin -->
+        <span class="g-signin"
+          data-callback="onSignInResult"
+          data-clientid="295169592941-lde7pd84p5p2ftca065jqgmbk1jv5bf5.apps.googleusercontent.com"
+          data-cookiepolicy="single_host_origin"
+          data-scope="https://www.googleapis.com/auth/games">
          </span>
       </div>
       Sign in to enable achievements and leaderboads.
@@ -88,7 +88,7 @@
 
 <div class="screen" id="highscores_div">
    <button class="back_to_menu_button up_button">&lt;&lt;</button>
-   <div id="highscores_your_box">YOU: 
+   <div id="highscores_your_box">YOU:
       <span id="your_high_score">00000</span>
    </div>
    <div class="highscores_box" id="highscores_social_box">
