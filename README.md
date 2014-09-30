@@ -5,7 +5,9 @@ Firewall Defense: a simple web game illustrating how to integrate the [Google Pl
 
 To use this code, you must create your own application instance and client ID's in the Developer Console. Please refer to the [instructions](https://developers.google.com/games/services/web/gettingstarted) on how to set up Google Play game services for a web application for more information.
 
-After setting up your own application and getting your own Client ID and setting up achievements and leaderboards, place your ID's in the `gameservices.js` file.
+After setting up your own application and getting your own Client ID and setting up achievements and leaderboards, place your ID's in the `gameservices.js` file.  Additionally, put your Client ID in the `data-clientid` attribute of the SignIn button in the `index.html` file.
+
+To run on your local machine, run `python -m SimpleHTTPServer` in the `firewall-defense` directory and then navigate to `localhost:8000` in your web browser.
 
 _Copyright (C) 2013 Google Inc._
 
