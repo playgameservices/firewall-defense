@@ -21,19 +21,23 @@ var gameservices = {};
 gameservices.CLIENT_ID = "295169592941-lde7pd84p5p2ftca065jqgmbk1jv5bf5.apps.googleusercontent.com";
 gameservices.LEADERBOARD_ID = "CgkI7Zzqy8sIEAIQCg";
 gameservices.ACHIEVEMENTS = {
+  // Achievement for killing your first enemy
   KILL_ENEMY: "CgkI7Zzqy8sIEAIQAQ",
+  // Achievements for killing <kills> enemies in a row
   PRECISION: [
     { kills:  5, id: "CgkI7Zzqy8sIEAIQAg" },
     { kills: 10, id: "CgkI7Zzqy8sIEAIQAw" },
     { kills: 25, id: "CgkI7Zzqy8sIEAIQBA" },
     { kills: 50, id: "CgkI7Zzqy8sIEAIQBQ" }
   ],
+  // Achievements for keeping the wall intact for <time> seconds
   INTEGRITY: [
     { time:  30, id: "CgkI7Zzqy8sIEAIQBg" },
     { time:  60, id: "CgkI7Zzqy8sIEAIQBw" },
     { time: 120, id: "CgkI7Zzqy8sIEAIQCA" },
     { time: 300, id: "CgkI7Zzqy8sIEAIQCQ" }
   ],
+  // Achievements for <score> total score
   RANK: [
     { score:  1000, id: "CgkI7Zzqy8sIEAIQCw" },
     { score:  2000, id: "CgkI7Zzqy8sIEAIQDA" },
@@ -42,19 +46,26 @@ gameservices.ACHIEVEMENTS = {
     { score:  8000, id: "CgkI7Zzqy8sIEAIQDw" },
     { score: 15000, id: "CgkI7Zzqy8sIEAIQEA" }
   ],
+  // Achievements for <kills> total kills (incremental)
   EXPERIENCE: [
     { kills:  50, id: "CgkI7Zzqy8sIEAIQEQ" },
     { kills: 100, id: "CgkI7Zzqy8sIEAIQEg" },
     { kills: 200, id: "CgkI7Zzqy8sIEAIQEw" },
     { kills: 500, id: "CgkI7Zzqy8sIEAIQFA" },
   ],
+  // Achievement for playing 25 times (incremental)
   FREQUENT: "CgkI7Zzqy8sIEAIQFQ",
+  // Achievement for scoring <minScore> points
   SERIOUS: { minScore: 2000, id: "CgkI7Zzqy8sIEAIQFg" },
+  // Secret achievement (hidden)
   OVUM: "CgkI7Zzqy8sIEAIQFw"
 };
 gameservices.EVENTS = {
+  // Event for killing an enemy
   ENEMIES_KILLED: "CgkI7Zzqy8sIEAIQGA",
+  // Event for playing a game
   GAMES_PLAYED: "CgkI7Zzqy8sIEAIQGQ" ,
+  // Event for achieving a 12-kill "MAX" combo
   COMBOS_ACHIEVED: "CgkI7Zzqy8sIEAIQGg"
 };
 
