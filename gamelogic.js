@@ -537,24 +537,49 @@ gamelogic.checkIncrementalAchievements = function(endOfGame) {
 
 // Check to see which events we should submit.
 gamelogic.checkEvents = function(endOfGame) {
+  var evts = [];
+
   // Submit kills
   if (gamelogic.game.kills > 0) {
-    gameservices.recordEvent(gameservices.EVENTS.ENEMIES_KILLED,
-      gamelogic.game.kills, gamelogic.game.startTime);
+    var evt = {
+      definitionId: gameservices.EVENTS.ENEMIES_KILLED,
+      updateCount: gamelogic.game.kills
+    }
+    evts.push(evt);
   }
 
   // Submit 12 combos
   if (gamelogic.game.maxCombos > 0) {
-    gameservices.recordEvent(gameservices.EVENTS.COMBOS_ACHIEVED,
-      gamelogic.game.maxCombos, gamelogic.game.startTime);
+    var evt = {
+      definitionId: gameservices.EVENTS.COMBOS_ACHIEVED,
+      updateCount: gamelogic.game.maxCombos
+    }
+    evts.push(evt);
   }
 
-
+  // Submit game played
   if (endOfGame) {
-    // Submit game played
-    gameservices.recordEvent(gameservices.EVENTS.GAMES_PLAYED, 1,
-      gamelogic.game.startTime);
+    var evt = {
+      definitionId: gameservices.EVENTS.GAMES_PLAYED,
+      updateCount: 1
+    }
+    evts.push(evt);
   }
+
+  gameservices.recordEvents(evts, gamelogic.game.startTime, function(resp) {
+    // Check quests after pushing events
+    gamelogic.checkQuests();
+  });
+}
+
+// Check to see if we completed any quests
+gamelogic.checkQuests = function() {
+  gameservices.claimCompletedMilestones(function(milestone) {
+    // This callback may be called multiple times, each time with the
+    // milestone of something we have just claimed
+    console.log('Completed QuestMilestone: ' + milestone.id);
+    gameservices.showQuestToast();
+  });
 }
 
 // Clears the board

@@ -43,7 +43,7 @@ gameservices.ACHIEVEMENTS = {
     { score: 15000, id: "CgkI7Zzqy8sIEAIQEA" }
   ],
   EXPERIENCE: [
-    { kills:  50, id: "CgkI7Zzqy8sIEAIQEq" },
+    { kills:  50, id: "CgkI7Zzqy8sIEAIQEQ" },
     { kills: 100, id: "CgkI7Zzqy8sIEAIQEg" },
     { kills: 200, id: "CgkI7Zzqy8sIEAIQEw" },
     { kills: 500, id: "CgkI7Zzqy8sIEAIQFA" },
@@ -70,11 +70,15 @@ gameservices.achievements = {};
 // event data
 gameservices.events = {};
 
+// quest data
+gameservices.quests = {};
+
 // this keeps track of async stuff we are loading. When everything is done
 // loading, we call gameservices.loadFinishedCallback.
 gameservices.asyncLoads = {
   achievements: false,
   events: false,
+  quests: false,
   definitions: false,
   publicHighScores: false,
   socialHighScores: false
@@ -142,6 +146,10 @@ gameservices.onApiLoaded = function() {
   // load player's events
   req = gapi.client.games.events.listByPlayer();
   req.execute(gameservices.onEventsLoaded);
+
+  // load quests
+  req = gapi.client.games.quests.list({ playerId: "me" });
+  req.execute(gameservices.onQuestsLoaded);
 
   // load high scores
   gameservices.loadHighScores();
@@ -302,6 +310,40 @@ gameservices.onEventsLoaded = function(result) {
   }
 }
 
+// Callled when quests have been loaded
+gameservices.onQuestsLoaded = function(result) {
+  if (!result) {
+    alert("Failed to sign in (failed to load quests).");
+    gameservices.onSignInResult(false);
+    return;
+  }
+
+  if (result.items) {
+    for (var i = 0; i < result.items.length; i++) {
+      var q = result.items[i];
+
+      if (!gameservices.quests[q.id]) {
+        gameservices.quests[q.id] = {};
+      }
+
+      gameservices.quests[q.id] = q;
+    }
+  }
+
+  if (result.nextPageToken) {
+    // there's more to load
+    var req = gapi.client.games.quests.list({
+      playerId: "me",
+      pageToken: result.nextPageToken
+    });
+    req.execute(gameservices.onQuestsLoaded);
+  } else {
+    // done loading
+    gameservices.asyncLoads.quests = true;
+    gameservices.checkAsyncLoadsFinished();
+  }
+}
+
 gameservices.loadHighScores = function() {
   // throw away the scores we have
   gameservices.highScores["public"] = [];
@@ -411,6 +453,12 @@ gameservices.showAchToast = function(achId) {
   setTimeout(function() { $("#ach_toast").hide(); }, 2000);
 }
 
+gameservices.showQuestToast = function() {
+  $("#ach_toast").html("QUEST COMPLETED: REWARD CLAIMED");
+  $("#ach_toast").show();
+  setTimeout(function() { $("#ach_toast").hide(); }, 2000);
+}
+
 gameservices.unlockAchievement = function(achId) {
   if (!gameservices.signedIn) return;
   if (gameservices.achievements[achId].unlocked) return;
@@ -452,10 +500,9 @@ gameservices.incrementAchievement = function(achId, steps) {
   });
 }
 
-gameservices.recordEvent = function(evtId, steps, startTime) {
+gameservices.recordEvents = function(evts, startTime, callback) {
   if (!gameservices.signedIn) return;
   var nowMillis = Date.now();
-  console.log('timePeriod:'  + (nowMillis - startTime));
   var req = gapi.client.games.events.record({
     requestId: nowMillis,
     currentTimeMillis: nowMillis,
@@ -465,17 +512,60 @@ gameservices.recordEvent = function(evtId, steps, startTime) {
           periodStartMillis: startTime - 100000,
           periodEndMillis: (nowMillis - 100)
         },
-        updates: [
-          {
-            definitionId: evtId,
-            updateCount: steps
-          }
-        ]
+        updates: evts
       }
     ]
   });
+  req.execute(callback);
+}
+
+gameservices.acceptQuest = function(id, callback) {
+  // Accept quest
+  var req = gapi.client.games.quests.accept({
+    questId: id
+  });
+  req.execute(callback);
+};
+
+gameservices.claimCompletedMilestones = function(callback) {
+  gapi.client.games.quests.list({ playerId: 'me' }).execute(function(resp) {
+    if (resp.items) {
+      for (var i = 0; i < resp.items.length; i++) {
+        // Find all unclaimed milestones of each quest
+        var quest = resp.items[i];
+        var unclaimed = quest.milestones
+          .filter(function(m) { return m.state == "COMPLETED_NOT_CLAIMED" });
+
+        // Claim each one
+        for (var j = 0; j < unclaimed.length; j++) {
+          var milestone = unclaimed[j];
+          gameservices.claimQuestMilestone(quest.id, milestone.id, function(claimed) {
+            if (claimed) {
+              callback(milestone);
+            }
+          });
+        }
+      }
+    }
+  });
+};
+
+gameservices.claimQuestMilestone = function(questId, milestoneId, callback) {
+  var req = gapi.client.games.questMilestones.claim({
+    requestId: Date.now(),
+    questId: questId,
+    milestoneId: milestoneId
+  });
+
   req.execute(function(resp) {
-    console.log(resp);
+    // Successful response looks like { "result": {} }
+    if (resp.result && (resp.result.keys == undefined)) {
+      callback(true);
+    } else {
+      // Non-empty means there was an error
+      console.log('BUG: Could not claim quest. ' + JSON.stringify(resp));
+      callback(false);
+    }
   });
 }
 

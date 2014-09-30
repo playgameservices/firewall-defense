@@ -177,13 +177,13 @@ button {
    color: #0f0;
 }
 
-#ach_title, #evt_title {
+.screen_title {
    padding-top: 20px;
    text-align: center;
    padding-bottom: 20px;
 }
 
-#ach_list, #evt_list {
+.screen_list {
    margin: 0px auto 0px auto;
    width: 800px;
    height: 500px;

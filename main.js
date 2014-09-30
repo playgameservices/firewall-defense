@@ -20,6 +20,7 @@ $(document).ready(function() {
   $('#lb_button').click(onLbClicked);
   $('#ach_button').click(onAchClicked);
   $('#stats_button').click(onStatsClicked);
+  $('#quests_button').click(onQuestsClicked);
   $('.back_to_menu_button').click(onBackToMenuClicked);
   $('#sign_out_button').click(onSignOutClicked);
   $(document).keydown(function(evt) { gamelogic.handleKey(evt.which, true); });
@@ -198,14 +199,14 @@ function onStatsClicked() {
     return;
   }
 
-  // fill in achievements screen
+  // fill in events screen
   var htmlv = [];
   htmlv.push(_makeEvtBox(gameservices.EVENTS.ENEMIES_KILLED));
   htmlv.push(_makeEvtBox(gameservices.EVENTS.GAMES_PLAYED));
   htmlv.push(_makeEvtBox(gameservices.EVENTS.COMBOS_ACHIEVED));
   $('#evt_list').html(htmlv.join(''));
 
-  // show achievements screen
+  // show events screen
   $('.screen').hide();
   $('#evt_div').show();
 }
@@ -223,6 +224,69 @@ function _makeEvtBox(id) {
     "<span class='ach_name_unlocked'>"+
     evt.def.displayName + "</span><br/><span class='ach_desc_unlocked'>" +
     evt.numEvents + "</span></div></div>";
+}
+
+function onQuestsClicked() {
+  if (!gameservices.signedIn) {
+    alert("Please sign in with Google to see quests.");
+    return;
+  }
+
+  // fill in quests screen
+  var htmlv = [];
+  for (var questId in gameservices.quests) {
+    // We dynamically load quests so that we can add them from the
+    // games console without needing to release a game update
+    htmlv.push(_makeQuestBox(questId));
+  }
+  $('#quest_list').html(htmlv.join(''));
+
+  // show quests screen
+  $('.screen').hide();
+  $('#quest_div').show();
+}
+
+function _makeQuestBox(id) {
+  var quest = gameservices.quests[id];
+  if (!quest) {
+    console.log("BUG: event ID not found: " + id);
+    return "?";
+  }
+
+  var boxStr = "<div class='ach_list_item'>" +
+          "<img src='" + (quest.iconUrl) + "?size=32' class='ach_icon'>" +
+          "<div class='ach_info'>" +
+            "<span class='ach_name_unlocked'>"+
+              quest.name + " (" + quest.state + ")" +
+            "</span><br/>" +
+            "<span class='ach_desc_unlocked'>" +
+              quest.description +
+            "</span>" +
+          "</div>";
+  if (quest.state == "OPEN") {
+    boxStr = boxStr +  "<br />" +
+      "<button id='button-" + id +
+      "' onclick='acceptQuest(\"" + id + "\")'" + ">Accept</button>";
+  }
+
+  boxStr = boxStr + "</div>";
+
+  return boxStr;
+}
+
+function acceptQuest(id) {
+  // Accept quest
+  gameservices.acceptQuest(id, function(resp) {
+    if (resp.id) {
+      // Hide button
+      $('#button-' + id).hide();
+
+      // Mark accepted locally
+      gameservices.quests[id].state = 'ACCEPTED';
+    } else {
+      alert('There was an error accepting the quest.');
+    }
+  });
 }
 
 // Called when user clicked on the "Sign Out" button.
