@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ graphics.drawPlayer = function(ctx, x, withScope) {
 // Draw an ally ("data packet")
 graphics.drawAlly = function(ctx, a) {
   var fifth = ALLY_W / 5;
-  var fill = a.angry ? graphics.palette.ally_angry : 
+  var fill = a.angry ? graphics.palette.ally_angry :
       graphics.ovum ? "#fcc/#f99/#f66" : graphics.palette.ally;
   graphics.drawBox(ctx, a.x, a.y, ALLY_W, ALLY_H, fill);
   graphics.drawBox(ctx, a.x + fifth, a.y + fifth, fifth, fifth, EYE_FILL);
@@ -136,7 +136,7 @@ graphics.drawScore = function(ctx, score) {
   if (score > graphics._lastScore) {
     displayScore = graphics._lastScore + graphics.MAX_SCORE_INC;
     if (displayScore > score) displayScore = score;
-  } 
+  }
   ctx.fillStyle = SCORE_FILL;
   ctx.font = SCORE_FONT;
   ctx.fillText(util.formatScore(displayScore), SCORE_X, SCORE_Y);
@@ -152,9 +152,9 @@ graphics.drawCombo = function(ctx, combo) {
   ctx.fillStyle = COMBO_FILL;
   ctx.font = COMBO_FONT;
   ctx.fillText("COMBO", COMBO_X, COMBO_Y);
-  graphics.drawBox(ctx, COMBO_BAR_X, COMBO_BAR_Y, COMBO_BAR_W, COMBO_BAR_H, 
+  graphics.drawBox(ctx, COMBO_BAR_X, COMBO_BAR_Y, COMBO_BAR_W, COMBO_BAR_H,
     COMBO_BAR_DARK_FILL);
-  graphics.drawBox(ctx, COMBO_BAR_X, COMBO_BAR_Y, COMBO_BAR_W * f, COMBO_BAR_H, 
+  graphics.drawBox(ctx, COMBO_BAR_X, COMBO_BAR_Y, COMBO_BAR_W * f, COMBO_BAR_H,
     COMBO_BAR_LIGHT_FILL);
 }
 

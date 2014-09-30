@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,20 +128,20 @@ var COMBO_MAX = 12;
 
 // palettes (we start with the first one and rotate as combo level rises)
 var PALETTES = [
-  { background: "#000", player: "#fff/#888/#fff", wall: "#0ff/#088/#044", 
-    enemy: "#0F0/#080/#040", ally: "#08F/#048/#024", 
+  { background: "#000", player: "#fff/#888/#fff", wall: "#0ff/#088/#044",
+    enemy: "#0F0/#080/#040", ally: "#08F/#048/#024",
     ally_angry: "#A00/#800/#400" },
 
-  { background: "#220", player: "#fff/#888/#fff", wall: "#0ff/#088/#044", 
-    enemy: "#ff0/#880/#440", ally: "#08F/#048/#024", 
+  { background: "#220", player: "#fff/#888/#fff", wall: "#0ff/#088/#044",
+    enemy: "#ff0/#880/#440", ally: "#08F/#048/#024",
     ally_angry: "#A00/#800/#400" },
 
-  { background: "#420", player: "#fff/#888/#fff", wall: "#0ff/#088/#044", 
-    enemy: "#fa0/#840/#420", ally: "#08F/#048/#024", 
+  { background: "#420", player: "#fff/#888/#fff", wall: "#0ff/#088/#044",
+    enemy: "#fa0/#840/#420", ally: "#08F/#048/#024",
     ally_angry: "#A00/#800/#400" },
 
-  { background: "#400", player: "#fff/#888/#fff", wall: "#0ff/#088/#044", 
-    enemy: "#f00/#800/#400", ally: "#08F/#048/#024", 
+  { background: "#400", player: "#fff/#888/#fff", wall: "#0ff/#088/#044",
+    enemy: "#f00/#800/#400", ally: "#08F/#048/#024",
     ally_angry: "#A00/#800/#400" }
 ];
 
